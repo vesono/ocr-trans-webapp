@@ -1,5 +1,5 @@
 import React, { Component } from 'react';
-import { withAuthenticator, PhotoPicker } from 'aws-amplify-react';
+import { PhotoPicker } from 'aws-amplify-react';
 import Amplify, { Storage, Auth } from 'aws-amplify';
 import awsmobile from './aws-exports';
 import './App.css';
@@ -26,7 +26,7 @@ const ImageFileUpload = async (key, object, type) => {
 }
 
 // main処理
-const App = () => {
+export const Home = () => {
 
   const onPickEvent = data => {
     const { file } = data;
@@ -51,5 +51,3 @@ const App = () => {
   );
 }
 
-// export default App;
-export default withAuthenticator(App);

@@ -1,14 +1,19 @@
 import React, { Component } from 'react';
 import { withAuthenticator, PhotoPicker } from 'aws-amplify-react';
-import Amplify, { Storage } from 'aws-amplify';
+import Amplify, { Storage, Auth } from 'aws-amplify';
 import awsmobile from './aws-exports';
 import './App.css';
+import { Header } from './Header'
+import 'bootstrap/dist/css/bootstrap.min.css';
 
 Amplify.configure(awsmobile);
 
-// const Header = () => {
-// 
-// }
+// log out
+export const logout = () => {
+  Auth.signOut()
+    .then(data => console.log(data))
+    .catch(err => console.log(err));
+}
 
 // file upload処理
 const ImageFileUpload = async (key, object, type) => {
@@ -39,7 +44,10 @@ const App = () => {
   }
 
   return (
-    <PhotoPicker preview onPick={data => onPickEvent(data)} />
+    <div>
+      <Header />
+      <PhotoPicker preview onPick={data => onPickEvent(data)} />
+    </div>
   );
 }
 

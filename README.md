@@ -24,4 +24,6 @@ npm install react-bootstrap bootstrap jquery
 npm install aws-amplify@^1.3.3 aws-amplify-react@^2.6.3
 # google cloud vision api
 npm install --save @google-cloud/vision
+# moment.js
+npm install moment
 ```

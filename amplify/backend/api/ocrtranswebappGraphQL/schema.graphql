@@ -1,0 +1,6 @@
+type PhotoOCR @model {
+  id: ID!
+  name: String!
+  photo_base64: String
+  ocr_result: String
+}

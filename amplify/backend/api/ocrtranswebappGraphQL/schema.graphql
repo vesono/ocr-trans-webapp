@@ -3,4 +3,5 @@ type PhotoOCR @model {
   name: String!
   photo_base64: String
   ocr_result: String
+  translate_result: String
 }

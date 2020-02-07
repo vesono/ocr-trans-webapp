@@ -11,6 +11,7 @@ export const createPhotoOcr = /* GraphQL */ `
       name
       photo_base64
       ocr_result
+      translate_result
     }
   }
 `;
@@ -24,6 +25,7 @@ export const updatePhotoOcr = /* GraphQL */ `
       name
       photo_base64
       ocr_result
+      translate_result
     }
   }
 `;
@@ -37,6 +39,7 @@ export const deletePhotoOcr = /* GraphQL */ `
       name
       photo_base64
       ocr_result
+      translate_result
     }
   }
 `;

@@ -8,6 +8,7 @@ export const getPhotoOcr = /* GraphQL */ `
       name
       photo_base64
       ocr_result
+      translate_result
     }
   }
 `;
@@ -23,6 +24,7 @@ export const listPhotoOcRs = /* GraphQL */ `
         name
         photo_base64
         ocr_result
+        translate_result
       }
       nextToken
     }

@@ -1,9 +1,11 @@
-import React, { Component } from 'react';
+import React from 'react';
+import API, { graphqlOperation } from '@aws-amplify/api';
 import { PhotoPicker } from 'aws-amplify-react';
 import Amplify, { Storage, Auth } from 'aws-amplify';
 import awsmobile from './aws-exports';
-import './App.css';
+import { createPhotoOcr } from './graphql/mutations';
 import { Header } from './Header'
+import './App.css';
 import 'bootstrap/dist/css/bootstrap.min.css';
 import gcp_env from './gcp_config/api_gcp_config.js';
 
@@ -16,15 +18,20 @@ const nowtime = () => {
 }
 
 // log out
-export const logout = () => {
+export const logout = async () => {
   Auth.signOut()
     .then(data => console.log(data))
     .catch(err => console.log(err));
 }
 
-// DB追加
-const addDB = () => {
-
+// 新規データ追加
+const insertDB = async (imagename, imageobject, result) => {
+  const db_newdata = {
+    name: imagename ,
+    photo_base64: imageobject,
+    ocr_result: result
+  };
+  await API.graphql(graphqlOperation(createPhotoOcr, { input: db_newdata }));
 }
 
 // file upload処理関数
@@ -58,7 +65,7 @@ const SendCloudVison = async data => {
     }
   );
   const resjson = await response.json();
-  console.log(resjson.responses["0"].fullTextAnnotation.text);
+  return resjson.responses["0"].fullTextAnnotation.text;
 }
 
 // main処理
@@ -67,29 +74,33 @@ export const Home = () => {
   // 写真アップロードイベント
   // onLoadに統一する。コンポーネントで送信ボタン増やす感じ
   // https://github.com/aws-amplify/amplify-js/blob/master/packages/aws-amplify-react/src/Widget/PhotoPicker.tsx
-  const onPickEvent = async data => {
-    const { file } = data;
-    console.log(file);
-    const option = { 
-      level: 'private',
-      contentType: file.type
-    };
-    await ImageFileUpload(file.name, file, option)
-  }
-
-  // cloud vision api呼び出しイベント
   const CloudVisonEvent = async dataurl => {
     const datasplit = dataurl.split( ',' );
     const data64 = datasplit[1];
-    await SendCloudVison(data64);
-    console.log(nowtime());
+    // 拡張子、ContentTypeをとる
+    const fileExtension = datasplit[0].toString().slice(datasplit[0].indexOf('/') + 1, datasplit[0].indexOf(';'));
+    const ctType = datasplit[0].toString().slice(datasplit[0].indexOf(':') + 1, datasplit[0].indexOf(';'));
+    console.log(ctType);
+    // ファイル名設定
+    const imagename = nowtime() + '.' + fileExtension;
+    // ocr処理
+    const ocrResult = await SendCloudVison(data64);
+    // db追加
+    await insertDB(imagename, data64, ocrResult);
+    // s3追加処理
+    const decodedFile = new Buffer(data64, 'base64');
+    const option = { 
+      level: 'private',
+      contentType: ctType
+    };
+    const s3Result = await ImageFileUpload(imagename, decodedFile, option);
+    console.log(s3Result);
   }
 
   return (
     <div>
       <Header />
-      <PhotoPicker preview onPick={data => onPickEvent(data)}
-                           onLoad={dataURL => CloudVisonEvent(dataURL)} />
+      <PhotoPicker preview onLoad={dataURL => CloudVisonEvent(dataURL)} />
     </div>
   );
 }

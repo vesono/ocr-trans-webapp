@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useEffect, useReducer, useRef } from 'react';
 import API, { graphqlOperation } from '@aws-amplify/api';
 import { PhotoPicker } from 'aws-amplify-react';
 import Amplify, { Storage, Auth } from 'aws-amplify';
@@ -67,6 +67,9 @@ const SendCloudVison = async data => {
   const resjson = await response.json();
   return resjson.responses["0"].fullTextAnnotation.text;
 }
+
+// 処理入れる
+// useEffect(() => {}, [])
 
 // main処理
 export const Home = () => {
